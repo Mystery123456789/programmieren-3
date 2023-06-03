@@ -1,8 +1,7 @@
-class Grass {
+class LivingCreature {
    constructor(x, y) {
       this.y = y;
       this.x = x;
-      this.rounds = 0;
       this.directions = [
          [this.x - 1, this.y - 1],
          [this.x, this.y - 1],
@@ -35,7 +34,12 @@ class Grass {
       }
       return found;
    }
-
+}
+class Grass extends LivingCreature {
+   constructor(x, y) {
+      super(x, y)
+      this.rounds = 0
+   }
 
    mul() {
       this.rounds++;
@@ -67,24 +71,13 @@ class Grass {
 
 
 
-class Grazer {
+class Grazer extends LivingCreature {
    constructor(x, y) {
-      this.x = x;
-      this.y = y;
+      super(x, y)
       this.multiply = 0;
       this.notEaten = 0;
       this.color = "yellow";
       this.index = 2;
-      this.neighbors = [
-         [this.x - 1, this.y - 1],
-         [this.x, this.y - 1],
-         [this.x + 1, this.y - 1],
-         [this.x - 1, this.y],
-         [this.x + 1, this.y],
-         [this.x - 1, this.y + 1],
-         [this.x, this.y + 1],
-         [this.x + 1, this.y + 1]
-      ];
    }
 
    // Methoden
@@ -102,19 +95,7 @@ class Grazer {
    }
    chooseCell(symbol) {
       this.updateNeighbors()
-      let found = [];
-      for (let i = 0; i < this.neighbors.length; i++) {
-         const pos = this.neighbors[i]; // [x, y]
-         let posX = pos[0];
-         let posY = pos[1];
-         if (posX >= 0 && posX < matrix[0].length &&
-            posY >= 0 && posY < matrix.length) {
-            if (matrix[posY][posX] == symbol) {
-               found.push(pos);
-            }
-         }
-      }
-      return found;
+      return super.chooseCell(symbol)
    }
 
    move() {
@@ -210,24 +191,13 @@ class Grazer {
 
 
 
-class Predator {
+class Predator extends LivingCreature{
    constructor(x, y) {
-      this.x = x;
-      this.y = y;
+      super(x,y)
       this.multiply = 0;
       this.notEaten = 0;
       this.color = "red";
       this.index = 3;
-      this.neighbors = [
-         [this.x - 1, this.y - 1],
-         [this.x, this.y - 1],
-         [this.x + 1, this.y - 1],
-         [this.x - 1, this.y],
-         [this.x + 1, this.y],
-         [this.x - 1, this.y + 1],
-         [this.x, this.y + 1],
-         [this.x + 1, this.y + 1]
-      ];
    }
 
    // Methoden
@@ -245,19 +215,7 @@ class Predator {
    }
    chooseCell(symbol) {
       this.updateNeighbors()
-      let found = [];
-      for (let i = 0; i < this.neighbors.length; i++) {
-         const pos = this.neighbors[i]; // [x, y]
-         let posX = pos[0];
-         let posY = pos[1];
-         if (posX >= 0 && posX < matrix[0].length &&
-            posY >= 0 && posY < matrix.length) {
-            if (matrix[posY][posX] == symbol) {
-               found.push(pos);
-            }
-         }
-      }
-      return found;
+      return super.chooseCell(symbol)
    }
 
    move() {
@@ -276,10 +234,10 @@ class Predator {
          this.x = newX
          this.y = newY
       }
-    
 
 
-      
+
+
    }
 
    eat() {
@@ -439,7 +397,7 @@ class Allesfresser {
          this.x = newX;
          this.y = newY;
          //grasobjekt löschen aus grassArr
-         
+
          for (let i = 0; i < grassArr.length; i++) {
             let grObj = grassArr[i];
             if (this.x == grObj.x && this.y == grObj.y) {
@@ -464,35 +422,35 @@ class Allesfresser {
       }
    }
 
-      die() {
-         matrix[this.y][this.x] = 0;
-         for (let i = 0; i < allesfresserArr.length; i++) {
-            let allesfresserObj = allesfresserArr[i];
-            if (this.x == allesfresserObj.x && this.y == allesfresserObj.y) {
-               allesfresserArr.splice(i, 4);
-               break;
-            }
-         }
-      }
-   
-
-      mul() {
-         if (this.multiply >= 30) {
-            // suche leere Nachbarfelder
-            let emptyArr = this.chooseCell(0);
-            if (emptyArr.length > 0) {
-               // wähle eines zufällig aus
-               let posNeighbor = random(emptyArr); // [x, y]
-               let newX = posNeighbor[0];
-               let newY = posNeighbor[1];
-               // matrix an dieser Pos Wert 1 schreiben
-               matrix[newY][newX] = 4;
-               let allesfresserObj = new Allesfresser(newX, newY);
-               allesfresserArr.push(allesfresserObj);
-            }
+   die() {
+      matrix[this.y][this.x] = 0;
+      for (let i = 0; i < allesfresserArr.length; i++) {
+         let allesfresserObj = allesfresserArr[i];
+         if (this.x == allesfresserObj.x && this.y == allesfresserObj.y) {
+            allesfresserArr.splice(i, 4);
+            break;
          }
       }
    }
+
+
+   mul() {
+      if (this.multiply >= 30) {
+         // suche leere Nachbarfelder
+         let emptyArr = this.chooseCell(0);
+         if (emptyArr.length > 0) {
+            // wähle eines zufällig aus
+            let posNeighbor = random(emptyArr); // [x, y]
+            let newX = posNeighbor[0];
+            let newY = posNeighbor[1];
+            // matrix an dieser Pos Wert 1 schreiben
+            matrix[newY][newX] = 4;
+            let allesfresserObj = new Allesfresser(newX, newY);
+            allesfresserArr.push(allesfresserObj);
+         }
+      }
+   }
+}
 
 
 class Baum {
