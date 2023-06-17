@@ -1,3 +1,4 @@
+const random = require('./utils')
 const LivingCreature = require('./livingCreature');
 module.exports = class Allesfresser extends LivingCreature{
     constructor(x, y) {
