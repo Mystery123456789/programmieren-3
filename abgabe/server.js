@@ -4,6 +4,16 @@ const Predator = require('./predator')
 const Allesfresser = require('./allesfresser')
 const Baum = require('./baum')
 
+const express = require ('express');
+const app = express();
+let server = require('http').Server(app);
+const io = require('socket.io')(server);
+
+app.use(express.static('/.'));
+app.get('/.',function(req, res){
+   res.redirect('client.html')
+})
+
 matrix = [
    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
@@ -147,10 +157,12 @@ function updateGame() {
 }
 
 
-initGame();
+server.listen(3000, function(){
+   console.log ("Server wurde gestartet und hört auf port 3000");
+   initGame();
 updateGame();
 
 setInterval(function () {
    updateGame(); // Ehemals draw
 }, 1000);
-
+})
