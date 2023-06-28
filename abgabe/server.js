@@ -4,14 +4,19 @@ const Predator = require('./predator')
 const Allesfresser = require('./allesfresser')
 const Baum = require('./baum')
 
-const express = require ('express');
+const express = require('express');
 const app = express();
 let server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-app.use(express.static('/.'));
-app.get('/.',function(req, res){
+app.use(express.static('./'));
+app.get('/', function (req, res) {
    res.redirect('client.html')
+})
+
+io.on('connection', function (socket) {
+   console.log('ws connection established ...', io.engine.clientsCount)
+   socket.emit("send matrix", matrix)
 })
 
 matrix = [
@@ -60,10 +65,10 @@ let side = 12.5
 let fr = 5
 // Lebewesenliste
 grassArr = []
- grazerArr = []
- predatorArr = []
- allesfresserArr = []
- baumArr = []
+grazerArr = []
+predatorArr = []
+allesfresserArr = []
+baumArr = []
 
 function createMatrix(b, h) {
    let matrix = [];
@@ -151,18 +156,21 @@ function updateGame() {
    }
    for (let y = 0; y < matrix.length; y++) {
       for (let x = 0; x < matrix[y].length; x++) {
-         console.log(matrix)
+         //console.log(matrix)
       }
    }
 }
 
 
-server.listen(3000, function(){
-   console.log ("Server wurde gestartet und hört auf port 3000");
-   initGame();
-updateGame();
-
-setInterval(function () {
-   updateGame(); // Ehemals draw
-}, 1000);
-})
+server.listen(3000, function (socket) {
+   console.log("Server wurde gestartet und hört auf port 3000");
+   if (io.engine.clientsCount === 1) {
+      initGame();
+      setInterval(function () {
+         updateGame(); // Ehemals draw
+         console.log('send matrix');
+         io.socket.emit('send matrix', matrix);
+      }, 1000);
+   }
+}
+)
